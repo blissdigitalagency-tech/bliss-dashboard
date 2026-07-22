@@ -1,0 +1,64 @@
+.clients-intro-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.clients-intro-row .page-intro {
+  margin: 0;
+}
+
+.client-package-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.client-package-picker-label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.client-package-option {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.client-package-tag {
+  margin-right: 4px;
+}
+
+.data-table th .row-remove {
+  margin-left: 6px;
+}
+
+.clients-table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.clients-table-scroll .data-table {
+  width: max-content;
+  min-width: 100%;
+  border: none;
+  border-radius: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: visible;
+}
+
+.clients-table-scroll .data-table th:first-child,
+.clients-table-scroll .data-table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  box-shadow: 2px 0 4px -2px rgba(0, 0, 0, 0.2);
+}
