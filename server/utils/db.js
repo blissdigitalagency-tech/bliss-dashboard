@@ -5,12 +5,18 @@ export const CLIENT_ID_COLUMN = 'Client-ID'
 
 export const DEFAULT_CLIENT_COLUMNS = [
   'Client-ID',
-  'Client Name',
-  'Brand Group',
-  'Client PIC/CP',
+  'Client PT',
+  'Client Business Name',
+  'Client PIC',
+  'Contact No.',
   'Package',
+  'Status',
   'Start Date',
   'Renewal',
+  'BillTo_PT',
+  'BillTo_Business',
+  'BillTo_Name',
+  'DocLang',
 ]
 
 let dbInstance = null
@@ -26,9 +32,18 @@ function toPath(pathOrUrl) {
 function getDb(pathOrUrl) {
   if (dbInstance) return dbInstance
   dbInstance = new DatabaseSync(toPath(pathOrUrl))
-  dbInstance.exec(
-    `CREATE TABLE IF NOT EXISTS clients (${quoteIdent(CLIENT_ID_COLUMN)} TEXT PRIMARY KEY)`
-  )
+
+  const existing = dbInstance
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='clients'")
+    .get()
+
+  if (!existing) {
+    dbInstance.exec(`CREATE TABLE clients (${quoteIdent(CLIENT_ID_COLUMN)} TEXT PRIMARY KEY)`)
+    DEFAULT_CLIENT_COLUMNS.filter((col) => col !== CLIENT_ID_COLUMN).forEach((col) => {
+      dbInstance.exec(`ALTER TABLE clients ADD COLUMN ${quoteIdent(col)} TEXT DEFAULT ''`)
+    })
+  }
+
   return dbInstance
 }
 
