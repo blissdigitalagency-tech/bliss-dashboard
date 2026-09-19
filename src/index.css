@@ -8,8 +8,63 @@
   --color-accent: #70020f;
   --color-accent-soft: #eeecfd;
 
+  --color-danger: #c0392b;
+  --color-danger-hover: #922b21;
+  --color-success-bg: #e6f7ed;
+  --color-success-text: #1c8a4a;
+  --color-warning-bg: #fdf0e0;
+  --color-warning-text: #b3690a;
+  --color-error-bg: #fdecea;
+  --color-error-text: #b3261e;
+  --color-neutral-bg: #e9e9ec;
+  --color-neutral-text: #55565f;
+  --color-blue-bg: #e3edfd;
+  --color-blue-text: #2456c9;
+  --color-purple-bg: #f1e7fb;
+  --color-purple-text: #7a3fc4;
+  --color-teal-bg: #e0f6f5;
+  --color-teal-text: #128a83;
+  --color-indigo-bg: #e8e7fc;
+  --color-indigo-text: #4638c4;
+  --color-pink-bg: #fce7f3;
+  --color-pink-text: #c22a82;
+
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #15161a;
+  --color-surface: #1e1f25;
+  --color-surface-hover: #292a31;
+  --color-border: #34353d;
+  --color-text: #e8e6ea;
+  --color-text-muted: #9a9ba3;
+  --color-accent: #e05263;
+  --color-accent-soft: #3a2530;
+
+  --color-danger: #ff6b5b;
+  --color-danger-hover: #ff8579;
+  --color-success-bg: #143d27;
+  --color-success-text: #4ade80;
+  --color-warning-bg: #40300f;
+  --color-warning-text: #f0a94e;
+  --color-error-bg: #3d1b18;
+  --color-error-text: #ff8579;
+  --color-neutral-bg: #2c2d33;
+  --color-neutral-text: #b0b1b8;
+  --color-blue-bg: #1a2b4d;
+  --color-blue-text: #6d9eff;
+  --color-purple-bg: #2e1f47;
+  --color-purple-text: #c084fc;
+  --color-teal-bg: #123a37;
+  --color-teal-text: #5eead4;
+  --color-indigo-bg: #241f47;
+  --color-indigo-text: #a5b4fc;
+  --color-pink-bg: #3d1a30;
+  --color-pink-text: #f472b6;
+
+  color-scheme: dark;
 }
 
 * {
@@ -75,7 +130,7 @@ body {
 .row-remove {
   background: none;
   border: none;
-  color: #c0392b;
+  color: var(--color-danger);
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -83,7 +138,7 @@ body {
 }
 
 .row-remove:hover {
-  color: #922b21;
+  color: var(--color-danger-hover);
 }
 
 .badge {
@@ -95,13 +150,58 @@ body {
 }
 
 .badge-active {
-  background: #e6f7ed;
-  color: #1c8a4a;
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .badge-paused {
-  background: #fdf0e0;
-  color: #b3690a;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.badge-inactive {
+  background: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+}
+
+.badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.badge-error {
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.badge-blue {
+  background: var(--color-blue-bg);
+  color: var(--color-blue-text);
+}
+
+.badge-purple {
+  background: var(--color-purple-bg);
+  color: var(--color-purple-text);
+}
+
+.badge-teal {
+  background: var(--color-teal-bg);
+  color: var(--color-teal-text);
+}
+
+.badge-indigo {
+  background: var(--color-indigo-bg);
+  color: var(--color-indigo-text);
+}
+
+.badge-pink {
+  background: var(--color-pink-bg);
+  color: var(--color-pink-text);
 }
 
 .btn-plain {
@@ -189,7 +289,7 @@ body {
 }
 
 .task-remove:hover {
-  color: #c0392b;
+  color: var(--color-danger);
 }
 
 .placeholder-box {

@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev:full"],
       "port": 5173
+    },
+    {
+      "name": "bliss-portfolio-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:\\Users\\Evander\\Documents\\blissdigitalagency.tech-project", "run", "dev"],
+      "port": 5173
     }
   ]
 }

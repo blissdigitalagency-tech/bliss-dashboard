@@ -1,39 +1,55 @@
 import { Router } from 'express'
 import {
-  readClientsSheet,
-  writeClientsSheet,
+  readClients,
+  clientExists,
+  insertClient,
+  updateClient,
+  deleteClient,
+  addColumn,
+  removeColumn,
   CLIENT_ID_COLUMN,
-} from '../utils/xlsx.js'
+} from '../utils/db.js'
+import { readJson } from '../utils/jsonStore.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
 
-const CLIENTS_PATH = new URL('../data/clients.xlsx', import.meta.url)
+const CLIENTS_PATH = new URL('../data/clients.db', import.meta.url)
+const TASKS_PATH = new URL('../data/tasks.json', import.meta.url)
+const REQUIRED_COLUMNS = ['Client-ID', 'Client Business Name', 'Client PIC', 'Contact No.']
 
 const router = Router()
 
-function isFileLockError(err) {
-  return err.code === 'EBUSY' || err.code === 'EPERM'
+function findMissingRequiredFields(columns, values) {
+  return REQUIRED_COLUMNS.filter(
+    (col) => columns.includes(col) && !String(values[col] ?? '').trim()
+  )
 }
 
-function fileLockResponse(res) {
+function isDbBusyError(err) {
+  return err?.code === 'ERR_SQLITE_ERROR' && /locked|busy/i.test(err.message)
+}
+
+function dbBusyResponse(res) {
   return res.status(409).json({
-    error: 'clients.xlsx is open in another program (e.g. Excel) — close it and try again',
+    error: 'The client database is busy — please try again in a moment',
   })
 }
 
-router.get('/', requireAuth, async (req, res) => {
-  const { columns, rows } = await readClientsSheet(CLIENTS_PATH)
+router.get('/', requireAuth, (req, res) => {
+  const { columns, rows } = readClients(CLIENTS_PATH)
   res.json({ columns, rows })
 })
 
-router.post('/', requireAuth, requireRole('Editor'), async (req, res) => {
-  const { columns, rows } = await readClientsSheet(CLIENTS_PATH)
+router.post('/', requireAuth, requireRole('Admin'), (req, res) => {
   const values = req.body ?? {}
+  const { columns } = readClients(CLIENTS_PATH)
+
+  const missing = findMissingRequiredFields(columns, values)
+  if (missing.length > 0) {
+    return res.status(400).json({ error: `Required field(s) missing: ${missing.join(', ')}` })
+  }
 
   const clientId = String(values[CLIENT_ID_COLUMN] ?? '').trim()
-  if (!clientId) {
-    return res.status(400).json({ error: `${CLIENT_ID_COLUMN} is required` })
-  }
-  if (rows.some((row) => row[CLIENT_ID_COLUMN] === clientId)) {
+  if (clientExists(CLIENTS_PATH, clientId)) {
     return res.status(409).json({ error: `${CLIENT_ID_COLUMN} "${clientId}" already exists` })
   }
 
@@ -42,105 +58,98 @@ router.post('/', requireAuth, requireRole('Editor'), async (req, res) => {
     newRow[col] = col === CLIENT_ID_COLUMN ? clientId : String(values[col] ?? '').trim()
   })
 
-  rows.push(newRow)
   try {
-    await writeClientsSheet(CLIENTS_PATH, columns, rows)
+    insertClient(CLIENTS_PATH, newRow)
   } catch (err) {
-    if (isFileLockError(err)) return fileLockResponse(res)
+    if (isDbBusyError(err)) return dbBusyResponse(res)
     throw err
   }
   res.status(201).json(newRow)
 })
 
-router.put('/:clientId', requireAuth, requireRole('Editor'), async (req, res) => {
-  const { columns, rows } = await readClientsSheet(CLIENTS_PATH)
-  const index = rows.findIndex((row) => row[CLIENT_ID_COLUMN] === req.params.clientId)
-  if (index === -1) {
+router.put('/:clientId', requireAuth, requireRole('Admin'), (req, res) => {
+  if (!clientExists(CLIENTS_PATH, req.params.clientId)) {
     return res.status(404).json({ error: 'Client not found' })
   }
 
+  const { columns, rows } = readClients(CLIENTS_PATH)
+  const existingRow = rows.find((row) => row[CLIENT_ID_COLUMN] === req.params.clientId)
   const values = req.body ?? {}
-  const updatedRow = { ...rows[index] }
+  const updatedRow = { ...existingRow }
   columns.forEach((col) => {
     if (col === CLIENT_ID_COLUMN) return
     if (col in values) updatedRow[col] = String(values[col] ?? '').trim()
   })
 
-  const newRows = [...rows]
-  newRows[index] = updatedRow
   try {
-    await writeClientsSheet(CLIENTS_PATH, columns, newRows)
+    updateClient(CLIENTS_PATH, req.params.clientId, updatedRow)
   } catch (err) {
-    if (isFileLockError(err)) return fileLockResponse(res)
+    if (isDbBusyError(err)) return dbBusyResponse(res)
     throw err
   }
   res.json(updatedRow)
 })
 
-router.delete('/:clientId', requireAuth, requireRole('Editor'), async (req, res) => {
-  const { columns, rows } = await readClientsSheet(CLIENTS_PATH)
-  const exists = rows.some((row) => row[CLIENT_ID_COLUMN] === req.params.clientId)
-  if (!exists) {
+router.delete('/:clientId', requireAuth, requireRole('Admin'), (req, res) => {
+  if (!clientExists(CLIENTS_PATH, req.params.clientId)) {
     return res.status(404).json({ error: 'Client not found' })
   }
 
-  const remaining = rows.filter((row) => row[CLIENT_ID_COLUMN] !== req.params.clientId)
+  const tasks = readJson(TASKS_PATH, [])
+  const linkedTaskCount = tasks.filter((t) => t.clientId === req.params.clientId).length
+  if (linkedTaskCount > 0) {
+    return res.status(409).json({
+      error: `Cannot delete: ${linkedTaskCount} task(s) on the Tasks board still reference this client. Delete or reassign them first.`,
+    })
+  }
+
   try {
-    await writeClientsSheet(CLIENTS_PATH, columns, remaining)
+    deleteClient(CLIENTS_PATH, req.params.clientId)
   } catch (err) {
-    if (isFileLockError(err)) return fileLockResponse(res)
+    if (isDbBusyError(err)) return dbBusyResponse(res)
     throw err
   }
   res.status(204).end()
 })
 
-router.post('/columns', requireAuth, requireRole('Editor'), async (req, res) => {
+router.post('/columns', requireAuth, requireRole('Admin'), (req, res) => {
   const name = String(req.body?.name ?? '').trim()
   if (!name) {
     return res.status(400).json({ error: 'Column name is required' })
   }
 
-  const { columns, rows } = await readClientsSheet(CLIENTS_PATH)
+  const { columns } = readClients(CLIENTS_PATH)
   if (columns.includes(name)) {
     return res.status(409).json({ error: `Column "${name}" already exists` })
   }
 
-  const newColumns = [...columns, name]
-  const newRows = rows.map((row) => ({ ...row, [name]: '' }))
-
   try {
-    await writeClientsSheet(CLIENTS_PATH, newColumns, newRows)
+    addColumn(CLIENTS_PATH, name)
   } catch (err) {
-    if (isFileLockError(err)) return fileLockResponse(res)
+    if (isDbBusyError(err)) return dbBusyResponse(res)
     throw err
   }
-  res.status(201).json({ columns: newColumns })
+  res.status(201).json({ columns: [...columns, name] })
 })
 
-router.delete('/columns/:name', requireAuth, requireRole('Editor'), async (req, res) => {
+router.delete('/columns/:name', requireAuth, requireRole('Admin'), (req, res) => {
   const name = req.params.name
   if (name === CLIENT_ID_COLUMN) {
     return res.status(400).json({ error: `${CLIENT_ID_COLUMN} can't be removed` })
   }
 
-  const { columns, rows } = await readClientsSheet(CLIENTS_PATH)
+  const { columns } = readClients(CLIENTS_PATH)
   if (!columns.includes(name)) {
     return res.status(404).json({ error: 'Column not found' })
   }
 
-  const newColumns = columns.filter((col) => col !== name)
-  const newRows = rows.map((row) => {
-    const { [name]: _removed, ...rest } = row
-    return rest
-  })
-
   try {
-    await writeClientsSheet(CLIENTS_PATH, newColumns, newRows)
+    removeColumn(CLIENTS_PATH, name)
   } catch (err) {
-    if (isFileLockError(err)) return fileLockResponse(res)
+    if (isDbBusyError(err)) return dbBusyResponse(res)
     throw err
   }
-  res.status(200).json({ columns: newColumns })
+  res.status(200).json({ columns: columns.filter((col) => col !== name) })
 })
 
 export default router

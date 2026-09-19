@@ -4,13 +4,20 @@ import { readUsers, writeUsers } from '../utils/users.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
 
 const USERS_PATH = new URL('../data/users.json', import.meta.url)
-const VALID_ROLES = ['Superadmin', 'Editor', 'User']
+const VALID_ROLES = ['Superadmin', 'Admin', 'Editor', 'User']
 
 const router = Router()
 
 router.get('/', requireAuth, requireRole('Superadmin'), (req, res) => {
   const users = readUsers(USERS_PATH).map(({ passwordHash, ...rest }) => rest)
   res.json(users)
+})
+
+// Lightweight roster for features like task assignment — any logged-in user
+// can see who's on the team, but not their role/username/other admin detail.
+router.get('/directory', requireAuth, (req, res) => {
+  const directory = readUsers(USERS_PATH).map(({ id, name }) => ({ id, name }))
+  res.json(directory)
 })
 
 router.post('/', requireAuth, requireRole('Superadmin'), (req, res) => {

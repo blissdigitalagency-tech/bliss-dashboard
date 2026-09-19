@@ -6,8 +6,9 @@ import './Sidebar.css'
 const links = [
   { to: '/', label: 'Overview', end: true },
   { to: '/clients', label: 'Clients' },
-  { to: '/invoices', label: 'Invoice Builder', role: 'Editor' },
+  { to: '/invoices', label: 'Invoice Builder', role: 'Admin' },
   { to: '/tasks', label: 'Tasks' },
+  { to: '/calendar', label: 'Calendar' },
   { to: '/analytics', label: 'Analytics' },
   { to: '/settings', label: 'Settings' },
 ]

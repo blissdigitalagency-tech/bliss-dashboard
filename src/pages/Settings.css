@@ -1,0 +1,68 @@
+.settings-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 480px;
+}
+
+.settings-section-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.settings-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.settings-info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
+.settings-info-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.settings-theme-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.settings-section-wide {
+  max-width: 720px;
+}
+
+.settings-table-scroll {
+  overflow-x: auto;
+}
+
+.settings-permission-cell {
+  text-align: center;
+}
+
+.settings-permission-no {
+  color: var(--color-text-muted);
+}

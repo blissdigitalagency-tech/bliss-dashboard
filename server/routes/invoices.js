@@ -7,12 +7,12 @@ const LOG_PATH = new URL('../data/invoice-log.json', import.meta.url)
 
 const router = Router()
 
-router.get('/log', requireAuth, requireRole('Editor'), (req, res) => {
+router.get('/log', requireAuth, requireRole('Admin'), (req, res) => {
   const log = readJson(LOG_PATH, [])
   res.json({ log: [...log].reverse() })
 })
 
-router.post('/log', requireAuth, requireRole('Editor'), (req, res) => {
+router.post('/log', requireAuth, requireRole('Admin'), (req, res) => {
   const body = req.body ?? {}
   const entry = {
     id: Date.now() + Math.random().toString(36).slice(2, 8),
@@ -41,13 +41,13 @@ router.post('/log', requireAuth, requireRole('Editor'), (req, res) => {
   res.status(201).json(entry)
 })
 
-router.get('/template/:clientId', requireAuth, requireRole('Editor'), (req, res) => {
+router.get('/template/:clientId', requireAuth, requireRole('Admin'), (req, res) => {
   const store = readJson(TEMPLATES_PATH, {})
   const entry = store[req.params.clientId] || {}
   res.json({ items: entry.items || [], lastInvoice: entry.lastInvoice || null })
 })
 
-router.put('/template/:clientId', requireAuth, requireRole('Editor'), (req, res) => {
+router.put('/template/:clientId', requireAuth, requireRole('Admin'), (req, res) => {
   const items = Array.isArray(req.body?.items) ? req.body.items : []
   const lastInvoice = req.body?.lastInvoice ?? null
 

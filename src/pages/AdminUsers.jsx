@@ -120,7 +120,9 @@ function AdminUsers() {
     <div className="page">
       <p className="page-intro">
         Superadmin only. Create accounts and assign roles &mdash; Superadmin
-        (full access), Editor (can add clients), User (view only).
+        (full access), Admin (Clients, Invoices, Tasks, and scheduling
+        calendar events), Editor (Tasks only &mdash; for regular-level
+        employees), User (view only).
       </p>
 
       <form className="task-form" onSubmit={handleAdd}>
@@ -152,6 +154,7 @@ function AdminUsers() {
         >
           <option value="User">User</option>
           <option value="Editor">Editor</option>
+          <option value="Admin">Admin</option>
           <option value="Superadmin">Superadmin</option>
         </select>
         <button type="submit" className="btn-primary" disabled={submitting}>
@@ -201,6 +204,7 @@ function AdminUsers() {
                     >
                       <option value="User">User</option>
                       <option value="Editor">Editor</option>
+                      <option value="Admin">Admin</option>
                       <option value="Superadmin">Superadmin</option>
                     </select>
                     <input

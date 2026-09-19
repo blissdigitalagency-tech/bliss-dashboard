@@ -1,0 +1,484 @@
+.task-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.task-header-actions .btn-plain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.task-view-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+}
+
+.task-tab {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.task-tab:hover {
+  background: var(--color-surface-hover);
+}
+
+.task-tab-active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.task-client-select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  max-width: 220px;
+}
+
+.task-client-select:hover {
+  background: var(--color-surface-hover);
+}
+
+.task-client-select-active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 600;
+  border-color: transparent;
+}
+
+/* Kanban */
+
+.task-kanban {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 1rem;
+  overflow-x: auto;
+}
+
+.task-column {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  transition: border-color 0.1s, background 0.1s;
+}
+
+.task-column-drag-over {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+.task-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.task-column-count {
+  color: var(--color-text-muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.task-column-body {
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.task-column-empty {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+/* Card */
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.task-card:hover {
+  border-color: var(--color-accent);
+}
+
+.task-card[draggable='true'] {
+  cursor: grab;
+}
+
+.task-card-dragging {
+  opacity: 0.4;
+}
+
+.task-card-client {
+  align-self: flex-start;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+}
+
+.task-card-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.task-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.task-card-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.task-card-assignees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.task-assignee-pill {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+}
+
+.task-assignee-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.task-assignee-option {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.task-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+
+.task-card-author {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.task-filmstrip {
+  display: flex;
+  gap: 3px;
+}
+
+.task-filmstrip-seg {
+  width: 12px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--color-border);
+}
+
+/* Dashboard */
+
+.task-pipeline-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--color-border);
+}
+
+.task-pipeline-segment {
+  height: 100%;
+}
+
+.task-pipeline-empty {
+  width: 100%;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  line-height: 14px;
+}
+
+.task-client-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-client-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: var(--color-text);
+}
+
+.task-client-progress-row:hover {
+  border-color: var(--color-accent);
+}
+
+.task-client-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-client-progress-name {
+  flex: 0 0 160px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.task-client-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.task-client-progress-fill {
+  height: 100%;
+}
+
+.task-client-progress-count {
+  flex: 0 0 50px;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* Filter chips */
+
+.task-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.task-chip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.task-chip-active {
+  border-color: transparent;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Client board header */
+
+.task-board-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.task-board-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.task-board-count {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+/* Modal */
+
+.task-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.task-modal {
+  background: var(--color-surface);
+  border-radius: 14px;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.task-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-modal-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.task-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.task-modal-close:hover {
+  color: var(--color-accent);
+}
+
+.task-modal-stage {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.task-history {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.task-history summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.task-history-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.task-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.task-textarea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.task-modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.task-modal-actions-spacer {
+  flex: 1;
+}
+
+.task-modal-delete {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  color: var(--color-danger);
+  display: inline-flex;
+  align-items: center;
+}
+
+.task-modal-delete:hover {
+  background: var(--color-surface-hover);
+}
+
+.task-modal-readonly p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+.task-modal-notes {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .task-kanban {
+    grid-template-columns: 1fr;
+  }
+}

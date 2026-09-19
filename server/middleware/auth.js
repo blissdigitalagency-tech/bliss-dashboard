@@ -3,7 +3,7 @@ import { readUsers } from '../utils/users.js'
 import { JWT_SECRET } from '../utils/jwtSecret.js'
 
 const USERS_PATH = new URL('../data/users.json', import.meta.url)
-const ROLE_RANK = { User: 1, Editor: 2, Superadmin: 3 }
+const ROLE_RANK = { User: 1, Editor: 2, Admin: 3, Superadmin: 4 }
 
 export function requireAuth(req, res, next) {
   const token = req.cookies?.token

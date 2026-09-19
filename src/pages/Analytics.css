@@ -1,0 +1,51 @@
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.analytics-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.analytics-card-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.analytics-renewals {
+  max-width: 640px;
+}
+
+.analytics-renewal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.analytics-renewal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+}
+
+.analytics-renewal-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.analytics-renewal-meta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
