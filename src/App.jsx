@@ -6,6 +6,7 @@ import Overview from './pages/Overview.jsx'
 import Clients from './pages/Clients.jsx'
 import Invoices from './pages/Invoices.jsx'
 import Tasks from './pages/Tasks.jsx'
+import Content from './pages/Content.jsx'
 import Calendar from './pages/Calendar.jsx'
 import Analytics from './pages/Analytics.jsx'
 import Settings from './pages/Settings.jsx'
@@ -34,6 +35,7 @@ function App() {
           }
         />
         <Route path="tasks" element={<Tasks />} />
+        <Route path="content" element={<Content />} />
         <Route path="calendar" element={<Calendar />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="settings" element={<Settings />} />
