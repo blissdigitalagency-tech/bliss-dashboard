@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Plus, Trash2, Calendar, FileSpreadsheet, RefreshCw, X, Users } from 'lucide-react'
+import { Plus, Trash2, Calendar, FileSpreadsheet, RefreshCw, X, Users, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { hasRole } from '../lib/roles.js'
 import { colorForIndex } from '../lib/boardColors.js'
@@ -52,6 +52,34 @@ function stageIndex(stage) {
 
 function stageLabel(stage) {
   return STAGES[stageIndex(stage)].label
+}
+
+function monthLabel(monthKey) {
+  const [year, month] = monthKey.split('-').map(Number)
+  return new Date(year, month - 1, 1).toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+function currentMonthKey() {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
+function shiftMonthKey(monthKey, delta) {
+  const [year, month] = monthKey.split('-').map(Number)
+  const d = new Date(year, month - 1 + delta, 1)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+// Legacy tasks created before month tracking was added have no `month`
+// field — fall back to the creation date so they still show up somewhere.
+function taskMonthKey(task) {
+  if (task.month) return task.month
+  const d = new Date(task.createdAt)
+  if (Number.isNaN(d.getTime())) return ''
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
 function formatHistoryDate(isoString) {
@@ -298,7 +326,7 @@ function TaskFormFields({ values, onChange, readOnly, directory, assigneeNames }
   )
 }
 
-function AddTaskModal({ clientId, directory, onClose, onCreated }) {
+function AddTaskModal({ clientId, month, directory, onClose, onCreated }) {
   const [values, setValues] = useState({
     title: '',
     category: '',
@@ -324,7 +352,7 @@ function AddTaskModal({ clientId, directory, onClose, onCreated }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ ...values, clientId }),
+        body: JSON.stringify({ ...values, clientId, month }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Could not create task')
@@ -347,6 +375,9 @@ function AddTaskModal({ clientId, directory, onClose, onCreated }) {
           </button>
         </div>
         {error && <div className="login-error">{error}</div>}
+        <p className="task-modal-stage">
+          Month: <strong>{monthLabel(month)}</strong>
+        </p>
         <TaskFormFields values={values} onChange={update} directory={directory} />
         <div className="task-modal-actions">
           <button type="submit" className="btn-primary" disabled={submitting}>
@@ -812,6 +843,7 @@ function Tasks() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [view, setView] = useState('dashboard')
+  const [monthKey, setMonthKey] = useState(currentMonthKey())
   const [editingTask, setEditingTask] = useState(null)
   const [addingForClient, setAddingForClient] = useState(null)
   const [exporting, setExporting] = useState(false)
@@ -856,6 +888,11 @@ function Tasks() {
     const nameById = new Map(directory.map((m) => [m.id, m.name]))
     return (assigneeIds) => (assigneeIds || []).map((id) => nameById.get(id) || 'Unknown').filter(Boolean)
   }, [directory])
+
+  const monthTasks = useMemo(
+    () => tasks.filter((t) => taskMonthKey(t) === monthKey),
+    [tasks, monthKey],
+  )
 
   function handleTaskCreated(task) {
     setTasks((prev) => [...prev, task])
@@ -958,6 +995,31 @@ function Tasks() {
 
       {error && <div className="login-error">{error}</div>}
 
+      <div className="calendar-toolbar">
+        <div className="calendar-nav">
+          <button
+            type="button"
+            className="btn-plain"
+            onClick={() => setMonthKey((m) => shiftMonthKey(m, -1))}
+            aria-label="Previous month"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="calendar-month-label">{monthLabel(monthKey)}</span>
+          <button
+            type="button"
+            className="btn-plain"
+            onClick={() => setMonthKey((m) => shiftMonthKey(m, 1))}
+            aria-label="Next month"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+        <button type="button" className="btn-plain" onClick={() => setMonthKey(currentMonthKey())}>
+          This Month
+        </button>
+      </div>
+
       <div className="task-view-tabs">
         <button
           type="button"
@@ -1009,10 +1071,10 @@ function Tasks() {
       {loading ? (
         <p className="page-intro">Loading...</p>
       ) : view === 'dashboard' ? (
-        <TasksDashboard tasks={tasks} clientRows={clientRows} setView={setView} />
+        <TasksDashboard tasks={monthTasks} clientRows={clientRows} setView={setView} />
       ) : view === 'my' ? (
         <MyTasksView
-          tasks={tasks}
+          tasks={monthTasks}
           currentUserId={user?.id}
           colorFor={colorFor}
           clientNameFor={clientNameFor}
@@ -1023,7 +1085,7 @@ function Tasks() {
         />
       ) : view === 'all' ? (
         <AllTasksView
-          tasks={tasks}
+          tasks={monthTasks}
           clientRows={clientRows}
           colorFor={colorFor}
           clientNameFor={clientNameFor}
@@ -1034,7 +1096,7 @@ function Tasks() {
         />
       ) : view === 'team' ? (
         <TeamView
-          tasks={tasks}
+          tasks={monthTasks}
           directory={directory}
           colorFor={colorFor}
           clientNameFor={clientNameFor}
@@ -1047,7 +1109,7 @@ function Tasks() {
         <ClientBoard
           clientRow={activeClientRow}
           color={colorFor(view)}
-          tasks={tasks.filter((t) => t.clientId === view)}
+          tasks={monthTasks.filter((t) => t.clientId === view)}
           canEdit={canEdit}
           assigneeNamesFor={assigneeNamesFor}
           onOpenTask={setEditingTask}
@@ -1061,6 +1123,7 @@ function Tasks() {
       {addingForClient && (
         <AddTaskModal
           clientId={addingForClient}
+          month={monthKey}
           directory={directory}
           onClose={() => setAddingForClient(null)}
           onCreated={handleTaskCreated}

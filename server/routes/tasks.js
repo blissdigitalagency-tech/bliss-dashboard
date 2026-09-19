@@ -31,7 +31,7 @@ router.get('/', requireAuth, (req, res) => {
 })
 
 router.post('/', requireAuth, requireRole('Editor'), (req, res) => {
-  const { clientId, title, dueDate, notes, link, category, assignees } = req.body ?? {}
+  const { clientId, title, month, dueDate, notes, link, category, assignees } = req.body ?? {}
   if (!clientId || !String(title ?? '').trim()) {
     return res.status(400).json({ error: 'clientId and title are required' })
   }
@@ -42,6 +42,7 @@ router.post('/', requireAuth, requireRole('Editor'), (req, res) => {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
     clientId: String(clientId),
     title: String(title).trim(),
+    month: String(month ?? now.slice(0, 7)),
     stage: 'todo',
     dueDate: String(dueDate ?? ''),
     notes: String(notes ?? ''),
