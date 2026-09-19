@@ -66,17 +66,19 @@ function Sidebar() {
           )
         })}
 
-        <NavLinks links={bottomLinks} user={user} />
-        {hasRole(user?.role, 'Superadmin') && (
-          <NavLink
-            to="/admin/users"
-            className={({ isActive }) =>
-              isActive ? 'sidebar-link sidebar-link-active' : 'sidebar-link'
-            }
-          >
-            Admin &middot; Users
-          </NavLink>
-        )}
+        <div className="sidebar-group">
+          <NavLinks links={bottomLinks} user={user} />
+          {hasRole(user?.role, 'Superadmin') && (
+            <NavLink
+              to="/admin/users"
+              className={({ isActive }) =>
+                isActive ? 'sidebar-link sidebar-link-active' : 'sidebar-link'
+              }
+            >
+              Admin &middot; Users
+            </NavLink>
+          )}
+        </div>
       </nav>
     </aside>
   )
