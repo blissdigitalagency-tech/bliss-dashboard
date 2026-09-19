@@ -338,7 +338,7 @@ function AddTaskModal({ clientId, directory, onClose, onCreated }) {
   }
 
   return (
-    <div className="task-modal-overlay" onClick={onClose}>
+    <div className="task-modal-overlay">
       <form className="task-modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <div className="task-modal-header">
           <h2>New Task</h2>
@@ -440,7 +440,7 @@ function EditTaskModal({ task, canEdit, directory, assigneeNamesFor, onClose, on
   }
 
   return (
-    <div className="task-modal-overlay" onClick={onClose}>
+    <div className="task-modal-overlay">
       <form className="task-modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSave}>
         <div className="task-modal-header">
           <h2>{canEdit ? 'Edit Task' : 'Task Details'}</h2>

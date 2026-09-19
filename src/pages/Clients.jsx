@@ -199,7 +199,7 @@ function ClientFormSections({ columns, values, onChange, onTogglePackage, client
 
 function EditClientModal({ clientId, columns, values, onChange, onTogglePackage, onClose, onSave, saving, error }) {
   return (
-    <div className="task-modal-overlay" onClick={onClose}>
+    <div className="task-modal-overlay">
       <form className="task-modal client-edit-modal" onClick={(e) => e.stopPropagation()} onSubmit={onSave}>
         <div className="task-modal-header">
           <h2>Edit Client</h2>
@@ -233,7 +233,7 @@ function EditClientModal({ clientId, columns, values, onChange, onTogglePackage,
 
 function AddClientModal({ columns, values, onChange, onTogglePackage, onClose, onSave, saving, error }) {
   return (
-    <div className="task-modal-overlay" onClick={onClose}>
+    <div className="task-modal-overlay">
       <form className="task-modal client-edit-modal" onClick={(e) => e.stopPropagation()} onSubmit={onSave}>
         <div className="task-modal-header">
           <h2>New Client</h2>

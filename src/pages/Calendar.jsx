@@ -43,7 +43,7 @@ function buildMonthGrid(monthDate) {
 function EventDetailModal({ event, clientNameFor, canManageSchedule, onClose, onEditSchedule, onDeleteSchedule }) {
   const navigate = useNavigate()
   return (
-    <div className="task-modal-overlay" onClick={onClose}>
+    <div className="task-modal-overlay">
       <div className="task-modal" onClick={(e) => e.stopPropagation()}>
         <div className="task-modal-header">
           <h2>{event.title}</h2>
@@ -137,7 +137,7 @@ function ScheduleModal({ initial, onClose, onSaved }) {
   }
 
   return (
-    <div className="task-modal-overlay" onClick={onClose}>
+    <div className="task-modal-overlay">
       <form className="task-modal" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
         <div className="task-modal-header">
           <h2>{isEditing ? 'Edit Event' : 'New Event'}</h2>
