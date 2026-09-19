@@ -75,10 +75,11 @@ function Overview() {
     }
   }, [clientRows])
 
+  const canViewAllDueSoon = hasRole(user?.role, 'Admin')
   const openTasks = tasks.filter((t) => t.stage !== 'done')
   const myOpenTasks = openTasks.filter((t) => (t.assignees || []).includes(user?.id))
 
-  const dueSoon = openTasks
+  const dueSoon = (canViewAllDueSoon ? openTasks : myOpenTasks)
     .filter((t) => t.dueDate)
     .map((t) => ({ ...t, daysLeft: daysUntil(t.dueDate) }))
     .filter((t) => t.daysLeft <= DUE_SOON_WINDOW_DAYS)
