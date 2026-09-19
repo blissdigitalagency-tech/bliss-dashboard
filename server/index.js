@@ -10,6 +10,7 @@ import invoiceRoutes from './routes/invoices.js'
 import assetRoutes from './routes/assets.js'
 import taskRoutes from './routes/tasks.js'
 import calendarEventRoutes from './routes/calendarEvents.js'
+import { isProd } from './utils/jwtSecret.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DIST_DIR = path.join(__dirname, '..', 'dist')
@@ -20,6 +21,14 @@ const PORT = process.env.PORT || process.env.API_PORT || 4000
 ensureSeedSuperadmin(USERS_PATH)
 
 const app = express()
+
+// Render/Railway/most PaaS hosts sit behind one reverse proxy hop — trust
+// its X-Forwarded-For so express-rate-limit and req.ip resolve the real
+// client IP instead of the proxy's own address.
+if (isProd) {
+  app.set('trust proxy', 1)
+}
+
 app.use(express.json())
 app.use(cookieParser())
 
