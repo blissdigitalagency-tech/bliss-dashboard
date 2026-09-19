@@ -3,16 +3,48 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { hasRole } from '../lib/roles.js'
 import './Sidebar.css'
 
-const links = [
+const topLinks = [
   { to: '/', label: 'Overview', end: true },
-  { to: '/clients', label: 'Clients' },
-  { to: '/invoices', label: 'Invoice Builder', role: 'Admin' },
-  { to: '/tasks', label: 'Tasks (Ads)' },
-  { to: '/content', label: 'Tasks (Content)' },
   { to: '/calendar', label: 'Calendar' },
-  { to: '/analytics', label: 'Analytics' },
-  { to: '/settings', label: 'Settings' },
 ]
+
+const groups = [
+  {
+    label: 'Data',
+    links: [
+      { to: '/clients', label: 'Clients' },
+      { to: '/analytics', label: 'Analytics' },
+    ],
+  },
+  {
+    label: 'Features',
+    links: [{ to: '/invoices', label: 'Invoice Builder', role: 'Admin' }],
+  },
+  {
+    label: 'Tasks',
+    links: [
+      { to: '/tasks', label: 'Tasks (Ads)' },
+      { to: '/content', label: 'Tasks (Content)' },
+    ],
+  },
+]
+
+const bottomLinks = [{ to: '/settings', label: 'Settings' }]
+
+function NavLinks({ links, user }) {
+  return links
+    .filter((link) => !link.role || hasRole(user?.role, link.role))
+    .map((link) => (
+      <NavLink
+        key={link.to}
+        to={link.to}
+        end={link.end}
+        className={({ isActive }) => (isActive ? 'sidebar-link sidebar-link-active' : 'sidebar-link')}
+      >
+        {link.label}
+      </NavLink>
+    ))
+}
 
 function Sidebar() {
   const { user } = useAuth()
@@ -21,20 +53,20 @@ function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-brand">Bliss Digital</div>
       <nav className="sidebar-nav">
-        {links
-          .filter((link) => !link.role || hasRole(user?.role, link.role))
-          .map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end={link.end}
-            className={({ isActive }) =>
-              isActive ? 'sidebar-link sidebar-link-active' : 'sidebar-link'
-            }
-          >
-            {link.label}
-          </NavLink>
-        ))}
+        <NavLinks links={topLinks} user={user} />
+
+        {groups.map((group) => {
+          const visibleLinks = group.links.filter((link) => !link.role || hasRole(user?.role, link.role))
+          if (visibleLinks.length === 0) return null
+          return (
+            <div key={group.label} className="sidebar-group">
+              <div className="sidebar-group-label">{group.label}</div>
+              <NavLinks links={visibleLinks} user={user} />
+            </div>
+          )
+        })}
+
+        <NavLinks links={bottomLinks} user={user} />
         {hasRole(user?.role, 'Superadmin') && (
           <NavLink
             to="/admin/users"
