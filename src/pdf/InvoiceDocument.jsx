@@ -105,11 +105,6 @@ const styles = StyleSheet.create({
   signatureName: { fontFamily: 'Helvetica-Bold' },
 })
 
-function formatIDR(value) {
-  const n = Number(value) || 0
-  return `IDR ${n.toLocaleString('en-US')}`
-}
-
 function formatTotal(value, language) {
   const n = Number(value) || 0
   return language === 'id' ? `Rp${n.toLocaleString('en-US')}` : `IDR ${n.toLocaleString('en-US')}`
@@ -182,7 +177,7 @@ function InvoiceDocument({
               <View style={styles.tableRow} key={i}>
                 <Text style={[styles.tableCell, styles.colDetail]}>{item.detail}</Text>
                 <Text style={[styles.tableCell, styles.colUnitPrice]}>
-                  {formatIDR(item.unitPrice)}
+                  {formatTotal(item.unitPrice, language)}
                 </Text>
                 <Text style={[styles.tableCell, styles.colQty]}>
                   {item.qtyCount} {item.qtyUnit}
