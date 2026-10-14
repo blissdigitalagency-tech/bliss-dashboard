@@ -39,3 +39,17 @@
   font-size: 0.8rem;
   color: var(--color-text-muted);
 }
+
+.overview-workload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 720px;
+  margin-top: 1.5rem;
+}
+
+.overview-workload-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
