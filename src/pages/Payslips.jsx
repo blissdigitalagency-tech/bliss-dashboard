@@ -19,6 +19,7 @@ const UI = {
     intro:
       'Generate a monthly payslip for a team member. Amounts are typed in manually — nothing is calculated for tax or benefits.',
     employee: 'Employee',
+    fullName: 'Employee full name',
     selectEmployee: 'Select an employee…',
     jobTitle: 'Job title',
     employeeId: 'Employee ID',
@@ -59,6 +60,7 @@ const UI = {
     intro:
       'Buat slip gaji bulanan untuk anggota tim. Semua jumlah diketik manual — tidak ada perhitungan pajak atau tunjangan otomatis.',
     employee: 'Karyawan',
+    fullName: 'Nama lengkap karyawan',
     selectEmployee: 'Pilih karyawan…',
     jobTitle: 'Jabatan',
     employeeId: 'ID Karyawan',
@@ -198,6 +200,7 @@ function Payslips() {
   const [error, setError] = useState('')
 
   const [userId, setUserId] = useState('')
+  const [fullName, setFullName] = useState('')
   const [jobTitle, setJobTitle] = useState('')
   const [employeeId, setEmployeeId] = useState('')
   const [period, setPeriod] = useState(currentPeriod())
@@ -247,6 +250,8 @@ function Payslips() {
     setUserId(value)
     setSaveStatus('idle')
     const profile = profiles[value] || {}
+    const member = directory.find((m) => String(m.id) === String(value))
+    setFullName(profile.fullName || member?.name || '')
     setJobTitle(profile.jobTitle || '')
     setEmployeeId(profile.employeeId || '')
     setEarnings(rowsFromProfile(profile.earnings))
@@ -265,7 +270,7 @@ function Payslips() {
 
   const payslipData = useMemo(
     () => ({
-      employeeName: employee?.name || 'Select an employee',
+      employeeName: fullName.trim() || employee?.name || 'Select an employee',
       employeeId,
       jobTitle,
       period,
@@ -275,7 +280,7 @@ function Payslips() {
       notes,
       language,
     }),
-    [employee, employeeId, jobTitle, period, payDate, earnings, deductions, notes, language],
+    [employee, fullName, employeeId, jobTitle, period, payDate, earnings, deductions, notes, language],
   )
 
   async function handleSaveProfile() {
@@ -287,6 +292,7 @@ function Payslips() {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
+          fullName,
           jobTitle,
           employeeId,
           earnings: earnings.map(({ name, amount }) => ({ name, amount })),
@@ -310,7 +316,7 @@ function Payslips() {
         credentials: 'include',
         body: JSON.stringify({
           userId: Number(userId),
-          employeeName: employee?.name,
+          employeeName: payslipData.employeeName,
           period,
           gross,
           deductions: totalDeductions,
@@ -324,7 +330,7 @@ function Payslips() {
     }
   }
 
-  const fileName = `Payslip - ${sanitizeFileName(employee?.name)} - ${period}.pdf`
+  const fileName = `Payslip - ${sanitizeFileName(payslipData.employeeName)} - ${period}.pdf`
 
   return (
     <div className="page">
@@ -349,6 +355,17 @@ function Payslips() {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label className="invoice-field">
+            {t.fullName}
+            <input
+              type="text"
+              className="task-input"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              disabled={!userId}
+            />
           </label>
 
           <div className="invoice-field-grid invoice-field-grid-2">

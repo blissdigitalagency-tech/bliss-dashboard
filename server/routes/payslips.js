@@ -40,6 +40,7 @@ router.put('/profiles/:userId', requireAuth, requireRole('Admin'), (req, res) =>
   const body = req.body ?? {}
   const profiles = readJson(PROFILES_PATH, {})
   profiles[userId] = {
+    fullName: String(body.fullName ?? '').trim(),
     jobTitle: String(body.jobTitle ?? '').trim(),
     employeeId: String(body.employeeId ?? '').trim(),
     earnings: sanitizeRows(body.earnings),
