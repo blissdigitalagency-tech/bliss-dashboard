@@ -11,9 +11,10 @@ import {
 } from '../utils/db.js'
 import { readJson } from '../utils/jsonStore.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
+import { dataPath } from '../utils/dataDir.js'
 
-const CLIENTS_PATH = new URL('../data/clients.db', import.meta.url)
-const TASKS_PATH = new URL('../data/tasks.json', import.meta.url)
+const CLIENTS_PATH = dataPath('clients.db')
+const TASKS_PATH = dataPath('tasks.json')
 const REQUIRED_COLUMNS = ['Client-ID', 'Client Business Name', 'Client PIC', 'Contact No.']
 
 const router = Router()

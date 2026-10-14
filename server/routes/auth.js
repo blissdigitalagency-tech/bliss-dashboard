@@ -5,8 +5,9 @@ import rateLimit from 'express-rate-limit'
 import { readUsers, writeUsers } from '../utils/users.js'
 import { requireAuth } from '../middleware/auth.js'
 import { JWT_SECRET, isProd } from '../utils/jwtSecret.js'
+import { dataPath } from '../utils/dataDir.js'
 
-const USERS_PATH = new URL('../data/users.json', import.meta.url)
+const USERS_PATH = dataPath('users.json')
 
 const router = Router()
 

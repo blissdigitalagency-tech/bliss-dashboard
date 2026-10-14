@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { readUsers } from '../utils/users.js'
 import { JWT_SECRET } from '../utils/jwtSecret.js'
+import { dataPath } from '../utils/dataDir.js'
 
-const USERS_PATH = new URL('../data/users.json', import.meta.url)
+const USERS_PATH = dataPath('users.json')
 const ROLE_RANK = { User: 1, Editor: 2, Admin: 3, Superadmin: 4 }
 
 export function requireAuth(req, res, next) {

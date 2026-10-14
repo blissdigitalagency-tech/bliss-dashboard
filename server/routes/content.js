@@ -1,8 +1,9 @@
 import { Router } from 'express'
+import { dataPath } from '../utils/dataDir.js'
 import { readJson, writeJson } from '../utils/jsonStore.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
 
-const CONTENT_PATH = new URL('../data/content.json', import.meta.url)
+const CONTENT_PATH = dataPath('content.json')
 const VALID_STAGES = ['planned', 'shooting', 'editing', 'posted']
 const STAGE_TYPES = ['Reels', 'Feed', 'Carousel', 'Story']
 

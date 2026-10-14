@@ -125,6 +125,16 @@ function AdminUsers() {
         employees), User (view only).
       </p>
 
+      <div className="backup-row">
+        <a href="/api/backup" download className="btn-plain">
+          Download backup
+        </a>
+        <span className="backup-hint">
+          Zip of all dashboard data (users, clients, invoice history). Save one
+          weekly somewhere off the server.
+        </span>
+      </div>
+
       <form className="task-form" onSubmit={handleAdd}>
         <input
           type="text"

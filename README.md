@@ -1,16 +1,28 @@
-# React + Vite
+# Bliss Digital dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Internal dashboard: clients, invoices, users. One Express service serves the API and the built React frontend.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm ci
+npm run dev:full   # Vite on :5173, API on :4000
+```
 
-## React Compiler
+## Deploying on Railway
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. New project → deploy from this GitHub repo.
+2. Build command `npm run build`, start command `npm start`.
+3. Variables:
+   - `NODE_ENV=production`
+   - `JWT_SECRET` — long random string (`openssl rand -hex 32`). The server refuses to start without it.
+   - `DATA_DIR=/data`
+4. Add a volume mounted at `/data`. Without it, every deploy wipes users, clients and invoice history.
+5. Deploy, read the starter superadmin password from the deploy logs, log in and change it.
+6. Pick the region closest to Jakarta.
 
-## Expanding the Oxlint configuration
+## Data and backups
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+All runtime data lives as files in `DATA_DIR` (default `server/data/`): `users.json`, `clients.db` (SQLite), `tasks.json`, `content.json`, `calendar-events.json`, `invoice-templates.json`, `invoice-log.json`. Never commit these; they hold client details and password hashes.
+
+Superadmins can download a zip of everything from **Users → Download backup**. To restore, stop the service, unzip the files into `DATA_DIR`, and start it again.

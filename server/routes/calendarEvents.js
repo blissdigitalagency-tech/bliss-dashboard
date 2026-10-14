@@ -1,8 +1,9 @@
 import { Router } from 'express'
+import { dataPath } from '../utils/dataDir.js'
 import { readJson, writeJson } from '../utils/jsonStore.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
 
-const EVENTS_PATH = new URL('../data/calendar-events.json', import.meta.url)
+const EVENTS_PATH = dataPath('calendar-events.json')
 
 const router = Router()
 

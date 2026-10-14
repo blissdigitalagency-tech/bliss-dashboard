@@ -1,10 +1,11 @@
 import { Router } from 'express'
+import { dataPath } from '../utils/dataDir.js'
 import { readJson, writeJson } from '../utils/jsonStore.js'
 import { readUsers } from '../utils/users.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
 
-const TASKS_PATH = new URL('../data/tasks.json', import.meta.url)
-const USERS_PATH = new URL('../data/users.json', import.meta.url)
+const TASKS_PATH = dataPath('tasks.json')
+const USERS_PATH = dataPath('users.json')
 const VALID_STAGES = ['todo', 'in_progress', 'review', 'done']
 
 const router = Router()

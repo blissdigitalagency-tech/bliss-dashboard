@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { ensureSeedSuperadmin } from './utils/users.js'
+import { dataPath } from './utils/dataDir.js'
 import authRoutes from './routes/auth.js'
 import clientRoutes from './routes/clients.js'
 import userRoutes from './routes/users.js'
@@ -12,11 +13,12 @@ import taskRoutes from './routes/tasks.js'
 import calendarEventRoutes from './routes/calendarEvents.js'
 import contentRoutes from './routes/content.js'
 import { isProd } from './utils/jwtSecret.js'
+import backupRoutes from './routes/backup.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DIST_DIR = path.join(__dirname, '..', 'dist')
 
-const USERS_PATH = new URL('./data/users.json', import.meta.url)
+const USERS_PATH = dataPath('users.json')
 const PORT = process.env.PORT || process.env.API_PORT || 4000
 
 ensureSeedSuperadmin(USERS_PATH)
@@ -41,6 +43,7 @@ app.use('/api/assets', assetRoutes)
 app.use('/api/tasks', taskRoutes)
 app.use('/api/calendar-events', calendarEventRoutes)
 app.use('/api/content', contentRoutes)
+app.use('/api/backup', backupRoutes)
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Not found' })
