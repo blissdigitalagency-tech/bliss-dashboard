@@ -56,3 +56,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+.invoices-form .invoice-field-grid .invoice-field {
+  white-space: nowrap;
+}
+
+.payslip-field-hint {
+  margin: -0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}

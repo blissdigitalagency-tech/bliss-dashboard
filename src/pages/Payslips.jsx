@@ -23,7 +23,8 @@ const UI = {
     jobTitle: 'Job title',
     employeeId: 'Employee ID',
     payPeriod: 'Pay period',
-    payDate: 'Pay date (3rd of next month)',
+    payDate: 'Pay date',
+    payDateHint: 'Paid on the 3rd of the month after the pay period.',
     language: 'Language',
     langId: 'Indonesian',
     langEn: 'English',
@@ -62,7 +63,8 @@ const UI = {
     jobTitle: 'Jabatan',
     employeeId: 'ID Karyawan',
     payPeriod: 'Periode gaji',
-    payDate: 'Tanggal pembayaran (tanggal 3 bulan berikutnya)',
+    payDate: 'Tanggal pembayaran',
+    payDateHint: 'Dibayarkan setiap tanggal 3 bulan setelah periode gaji.',
     language: 'Bahasa',
     langId: 'Indonesia',
     langEn: 'Inggris',
@@ -392,6 +394,7 @@ function Payslips() {
               </select>
             </label>
           </div>
+          <p className="payslip-field-hint">{t.payDateHint}</p>
 
           <RowEditor
             label={t.earnings}
