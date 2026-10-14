@@ -14,6 +14,18 @@ const PRESETS = {
   },
 }
 
+const PLACEHOLDERS = {
+  en: { description: 'Description', amount: 'Amount (IDR)' },
+  id: { description: 'Keterangan', amount: 'Jumlah (IDR)' },
+}
+
+function translateRows(rows, kind, from, to) {
+  return rows.map((row) => {
+    const i = PRESETS[from][kind].indexOf(row.name)
+    return i === -1 ? row : { ...row, name: PRESETS[to][kind][i] }
+  })
+}
+
 let nextRowId = 1
 function makeRow(name = '', amount = '') {
   return { id: nextRowId++, name, amount }
@@ -44,7 +56,7 @@ function formatIDR(value) {
   return `IDR ${(Number(value) || 0).toLocaleString('en-US')}`
 }
 
-function RowEditor({ label, rows, presets, onChange, onAdd, onRemove }) {
+function RowEditor({ label, rows, presets, language, onChange, onAdd, onRemove }) {
   return (
     <div className="invoice-items">
       <div className="invoice-items-header">
@@ -56,14 +68,14 @@ function RowEditor({ label, rows, presets, onChange, onAdd, onRemove }) {
           <input
             type="text"
             className="task-input"
-            placeholder="Description"
+            placeholder={PLACEHOLDERS[language].description}
             value={row.name}
             onChange={(e) => onChange(row.id, 'name', e.target.value)}
           />
           <input
             type="number"
             className="task-input"
-            placeholder="Amount (IDR)"
+            placeholder={PLACEHOLDERS[language].amount}
             min="0"
             value={row.amount}
             onChange={(e) => onChange(row.id, 'amount', e.target.value)}
@@ -142,6 +154,12 @@ function Payslips() {
     }
     load()
   }, [])
+
+  function changeLanguage(next) {
+    setEarnings((prev) => translateRows(prev, 'earnings', language, next))
+    setDeductions((prev) => translateRows(prev, 'deductions', language, next))
+    setLanguage(next)
+  }
 
   const employee = directory.find((m) => String(m.id) === String(userId))
 
@@ -237,7 +255,7 @@ function Payslips() {
 
       {error && <div className="login-error">{error}</div>}
 
-      <div className="invoices-layout">
+      <div className="invoices-layout payslips-layout">
         <div className="invoices-form">
           <label className="invoice-field">
             Employee
@@ -293,7 +311,7 @@ function Payslips() {
             </label>
             <label className="invoice-field">
               Language
-              <select className="task-input" value={language} onChange={(e) => setLanguage(e.target.value)}>
+              <select className="task-input" value={language} onChange={(e) => changeLanguage(e.target.value)}>
                 <option value="id">Indonesian</option>
                 <option value="en">English</option>
               </select>
@@ -304,6 +322,7 @@ function Payslips() {
             label="Earnings"
             rows={earnings}
             presets={PRESETS[language].earnings}
+            language={language}
             onChange={updateRows(setEarnings)}
             onAdd={(name) => setEarnings((prev) => [...prev, makeRow(name)])}
             onRemove={(id) => setEarnings((prev) => prev.filter((r) => r.id !== id))}
@@ -313,6 +332,7 @@ function Payslips() {
             label="Deductions"
             rows={deductions}
             presets={PRESETS[language].deductions}
+            language={language}
             onChange={updateRows(setDeductions)}
             onAdd={(name) => setDeductions((prev) => [...prev, makeRow(name)])}
             onRemove={(id) => setDeductions((prev) => prev.filter((r) => r.id !== id))}

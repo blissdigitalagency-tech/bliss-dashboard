@@ -46,3 +46,13 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+.invoices-layout.payslips-layout {
+  grid-template-columns: minmax(380px, 580px) 1fr;
+}
+
+@media (max-width: 900px) {
+  .invoices-layout.payslips-layout {
+    grid-template-columns: 1fr;
+  }
+}
