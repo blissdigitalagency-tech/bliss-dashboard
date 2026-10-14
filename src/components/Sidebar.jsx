@@ -18,7 +18,10 @@ const groups = [
   },
   {
     label: 'Features',
-    links: [{ to: '/invoices', label: 'Invoice Builder', role: 'Admin' }],
+    links: [
+      { to: '/invoices', label: 'Invoice Builder', role: 'Admin' },
+      { to: '/payslips', label: 'Payslip Generator', role: 'Admin' },
+    ],
   },
   {
     label: 'Tasks',

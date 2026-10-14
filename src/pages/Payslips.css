@@ -1,0 +1,48 @@
+.payslip-row {
+  display: grid;
+  grid-template-columns: 1fr 150px auto;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.payslip-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.payslip-preset-row .task-chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.payslip-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.payslip-totals > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.payslip-totals-net {
+  font-size: 1.05rem;
+}
+
+.payslip-warning {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #e5484d;
+}
+
+.invoices-form .invoice-field input,
+.invoices-form .invoice-field select {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}

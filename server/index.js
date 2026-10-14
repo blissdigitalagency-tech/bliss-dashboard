@@ -11,6 +11,7 @@ import assetRoutes from './routes/assets.js'
 import taskRoutes from './routes/tasks.js'
 import calendarEventRoutes from './routes/calendarEvents.js'
 import contentRoutes from './routes/content.js'
+import payslipRoutes from './routes/payslips.js'
 import { isProd } from './utils/jwtSecret.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -41,6 +42,7 @@ app.use('/api/assets', assetRoutes)
 app.use('/api/tasks', taskRoutes)
 app.use('/api/calendar-events', calendarEventRoutes)
 app.use('/api/content', contentRoutes)
+app.use('/api/payslips', payslipRoutes)
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Not found' })

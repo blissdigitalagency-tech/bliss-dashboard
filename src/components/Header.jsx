@@ -6,6 +6,7 @@ const titles = {
   '/': 'Overview',
   '/clients': 'Clients',
   '/invoices': 'Invoice Builder',
+  '/payslips': 'Payslip Generator',
   '/tasks': 'Tasks (Ads)',
   '/content': 'Tasks (Content)',
   '/calendar': 'Calendar',

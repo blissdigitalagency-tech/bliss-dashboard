@@ -5,6 +5,7 @@ import Login from './pages/Login.jsx'
 import Overview from './pages/Overview.jsx'
 import Clients from './pages/Clients.jsx'
 import Invoices from './pages/Invoices.jsx'
+import Payslips from './pages/Payslips.jsx'
 import Tasks from './pages/Tasks.jsx'
 import Content from './pages/Content.jsx'
 import Calendar from './pages/Calendar.jsx'
@@ -31,6 +32,14 @@ function App() {
           element={
             <ProtectedRoute role="Admin">
               <Invoices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="payslips"
+          element={
+            <ProtectedRoute role="Admin">
+              <Payslips />
             </ProtectedRoute>
           }
         />
