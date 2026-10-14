@@ -28,9 +28,12 @@ function currentPeriod() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 
-function todayIso() {
-  const d = new Date()
-  return `${currentPeriod()}-${String(d.getDate()).padStart(2, '0')}`
+// Salaries are paid on the 3rd of the month after the pay period.
+function payDateForPeriod(period) {
+  const [year, month] = String(period || '').split('-').map(Number)
+  if (!year || !month) return ''
+  const next = new Date(year, month, 1)
+  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-03`
 }
 
 function sanitizeFileName(value) {
@@ -107,7 +110,6 @@ function Payslips() {
   const [jobTitle, setJobTitle] = useState('')
   const [employeeId, setEmployeeId] = useState('')
   const [period, setPeriod] = useState(currentPeriod())
-  const [payDate, setPayDate] = useState(todayIso())
   const [language, setLanguage] = useState('id')
   const [earnings, setEarnings] = useState([])
   const [deductions, setDeductions] = useState([])
@@ -158,6 +160,7 @@ function Payslips() {
       setter((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)))
   }
 
+  const payDate = payDateForPeriod(period)
   const gross = sumRows(earnings)
   const totalDeductions = sumRows(deductions)
   const net = Math.max(0, gross - totalDeductions)
@@ -285,13 +288,8 @@ function Payslips() {
               />
             </label>
             <label className="invoice-field">
-              Pay date
-              <input
-                type="date"
-                className="task-input"
-                value={payDate}
-                onChange={(e) => setPayDate(e.target.value)}
-              />
+              Pay date (3rd of next month)
+              <input type="date" className="task-input" value={payDate} readOnly disabled />
             </label>
             <label className="invoice-field">
               Language
