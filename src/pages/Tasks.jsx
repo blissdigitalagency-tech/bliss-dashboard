@@ -3,17 +3,27 @@ import { Plus, Trash2, Calendar, FileSpreadsheet, RefreshCw, X, Users, ChevronLe
 import { useAuth } from '../context/AuthContext.jsx'
 import { hasRole } from '../lib/roles.js'
 import { colorForIndex } from '../lib/boardColors.js'
+import { todayKey, isOverdue } from '../lib/taskMetrics.js'
 import './Tasks.css'
 
 const CLIENT_ID_COLUMN = 'Client-ID'
 const CLIENT_NAME_COLUMN = 'Client Business Name'
 
 const STAGES = [
-  { key: 'todo', label: 'To Do' },
+  { key: 'todo', label: 'Not Started' },
   { key: 'in_progress', label: 'In Progress' },
-  { key: 'review', label: 'Review' },
+  { key: 'review', label: 'Waiting Review' },
+  { key: 'revision', label: 'Revision' },
   { key: 'done', label: 'Done' },
 ]
+
+const STAGE_BADGE_CLASS = {
+  todo: 'badge-inactive',
+  in_progress: 'badge-blue',
+  review: 'badge-warning',
+  revision: 'badge-error',
+  done: 'badge-success',
+}
 
 const CATEGORY_OPTIONS = [
   'Client Work',
@@ -24,6 +34,11 @@ const CATEGORY_OPTIONS = [
   'Meeting',
   'Reporting',
   'Proposal',
+  'Ads Setup',
+  'Optimization',
+  'Report',
+  'Contract Creation',
+  'Invoice',
 ]
 
 const CATEGORY_BADGE_CLASS = {
@@ -35,6 +50,11 @@ const CATEGORY_BADGE_CLASS = {
   Meeting: 'badge-warning',
   Reporting: 'badge-success',
   Proposal: 'badge-pink',
+  'Ads Setup': 'badge-blue',
+  Optimization: 'badge-teal',
+  Report: 'badge-success',
+  'Contract Creation': 'badge-pink',
+  Invoice: 'badge-warning',
 }
 
 function categoryBadgeClass(category) {
@@ -230,6 +250,7 @@ function TaskFormFields({ values, onChange, readOnly, directory, assigneeNames }
             Category: <span className={`badge ${categoryBadgeClass(values.category)}`}>{values.category}</span>
           </p>
         )}
+        {values.startDate && <p>Start: {values.startDate}</p>}
         {values.dueDate && <p>Due: {values.dueDate}</p>}
         {assigneeNames.length > 0 && <p>Assigned to: {assigneeNames.join(', ')}</p>}
         {values.link && (
@@ -278,6 +299,15 @@ function TaskFormFields({ values, onChange, readOnly, directory, assigneeNames }
             <option key={opt} value={opt} />
           ))}
         </datalist>
+      </label>
+      <label className="task-modal-field">
+        Start date
+        <input
+          type="date"
+          className="task-input"
+          value={values.startDate}
+          onChange={(e) => onChange('startDate', e.target.value)}
+        />
       </label>
       <label className="task-modal-field">
         Due date
@@ -330,6 +360,7 @@ function AddTaskModal({ clientId, month, directory, onClose, onCreated }) {
   const [values, setValues] = useState({
     title: '',
     category: '',
+    startDate: todayKey(),
     dueDate: '',
     link: '',
     notes: '',
@@ -393,6 +424,7 @@ function EditTaskModal({ task, canEdit, directory, assigneeNamesFor, onClose, on
   const [values, setValues] = useState({
     title: task.title,
     category: task.category,
+    startDate: task.startDate || '',
     dueDate: task.dueDate,
     link: task.link,
     notes: task.notes,
@@ -482,6 +514,9 @@ function EditTaskModal({ task, canEdit, directory, assigneeNamesFor, onClose, on
         {error && <div className="login-error">{error}</div>}
         <p className="task-modal-stage">
           Stage: <strong>{STAGES[idx].label}</strong>
+          {task.stage === 'done' && stage === 'done' && task.completedDate
+            ? ` · Completed ${task.completedDate}`
+            : ''}
         </p>
         {history.length > 0 && (
           <details className="task-history">
@@ -833,6 +868,136 @@ function MyTasksView({
   )
 }
 
+function TasksTable({ tasks, directory, clientRows, clientNameFor, assigneeNamesFor, onOpenTask }) {
+  const [picFilter, setPicFilter] = useState('all')
+  const [clientFilter, setClientFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const today = todayKey()
+
+  const rows = useMemo(
+    () =>
+      tasks
+        .filter((t) => picFilter === 'all' || (t.assignees || []).includes(Number(picFilter)))
+        .filter((t) => clientFilter === 'all' || t.clientId === clientFilter)
+        .filter((t) => categoryFilter === 'all' || t.category === categoryFilter)
+        .filter((t) => statusFilter === 'all' || t.stage === statusFilter)
+        .sort((a, b) => (b.startDate || '').localeCompare(a.startDate || '')),
+    [tasks, picFilter, clientFilter, categoryFilter, statusFilter],
+  )
+
+  return (
+    <div className="page">
+      <div className="clients-filter-row">
+        <label className="clients-filter-group">
+          <span className="client-field-label">PIC</span>
+          <select className="task-input" value={picFilter} onChange={(e) => setPicFilter(e.target.value)}>
+            <option value="all">Everyone</option>
+            {directory.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="clients-filter-group">
+          <span className="client-field-label">Client</span>
+          <select className="task-input" value={clientFilter} onChange={(e) => setClientFilter(e.target.value)}>
+            <option value="all">All Clients</option>
+            {clientRows.map((row) => (
+              <option key={row[CLIENT_ID_COLUMN]} value={row[CLIENT_ID_COLUMN]}>
+                {clientLabel(row)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="clients-filter-group">
+          <span className="client-field-label">Category</span>
+          <select className="task-input" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+            <option value="all">All Categories</option>
+            {CATEGORY_OPTIONS.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="clients-filter-group">
+          <span className="client-field-label">Status</span>
+          <select className="task-input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All Statuses</option>
+            {STAGES.map((st) => (
+              <option key={st.key} value={st.key}>
+                {st.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <span className="clients-filter-count">
+          {rows.length} of {tasks.length} tasks
+        </span>
+      </div>
+
+      <div className="task-table-scroll">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>Assigned By</th>
+              <th>PIC</th>
+              <th>Client</th>
+              <th>Category</th>
+              <th>Task</th>
+              <th>Status</th>
+              <th>Due</th>
+              <th>Completed</th>
+              <th>Output</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={11}>No tasks match these filters this month.</td>
+              </tr>
+            )}
+            {rows.map((t) => (
+              <tr key={t.id} className="task-table-row" onClick={() => onOpenTask(t)}>
+                <td>{t.startDate}</td>
+                <td>{t.author}</td>
+                <td>{assigneeNamesFor(t.assignees).join(', ')}</td>
+                <td>{clientNameFor(t.clientId)}</td>
+                <td>
+                  {t.category && <span className={`badge ${categoryBadgeClass(t.category)}`}>{t.category}</span>}
+                </td>
+                <td className="task-table-title">{t.title}</td>
+                <td>
+                  <span className={`badge ${STAGE_BADGE_CLASS[t.stage] || 'badge-inactive'}`}>
+                    {stageLabel(t.stage)}
+                  </span>
+                </td>
+                <td className={isOverdue(t, today) ? 'task-overdue' : undefined}>
+                  {t.dueDate}
+                  {isOverdue(t, today) ? ' (overdue)' : ''}
+                </td>
+                <td>{t.completedDate}</td>
+                <td>
+                  {t.link && (
+                    <a href={t.link} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                      Link
+                    </a>
+                  )}
+                </td>
+                <td className="task-table-notes">{t.notes}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 function Tasks() {
   const { user } = useAuth()
   const canEdit = hasRole(user?.role, 'Editor')
@@ -935,7 +1100,9 @@ function Tasks() {
         { header: 'Title', key: 'title', width: 32 },
         { header: 'Stage', key: 'stage', width: 14 },
         { header: 'Category', key: 'category', width: 16 },
+        { header: 'Start Date', key: 'startDate', width: 14 },
         { header: 'Due Date', key: 'dueDate', width: 14 },
+        { header: 'Completed Date', key: 'completedDate', width: 16 },
         { header: 'Assignees', key: 'assignees', width: 24 },
         { header: 'Assigned By', key: 'author', width: 16 },
         { header: 'Link', key: 'link', width: 30 },
@@ -948,7 +1115,9 @@ function Tasks() {
           title: t.title,
           stage: STAGES[stageIndex(t.stage)].label,
           category: t.category,
+          startDate: t.startDate,
           dueDate: t.dueDate,
+          completedDate: t.completedDate,
           assignees: assigneeNamesFor(t.assignees).join(', '),
           author: t.author,
           link: t.link,
@@ -1044,6 +1213,13 @@ function Tasks() {
         </button>
         <button
           type="button"
+          className={view === 'table' ? 'task-tab task-tab-active' : 'task-tab'}
+          onClick={() => setView('table')}
+        >
+          Table
+        </button>
+        <button
+          type="button"
           className={view === 'team' ? 'task-tab task-tab-active' : 'task-tab'}
           onClick={() => setView('team')}
         >
@@ -1093,6 +1269,15 @@ function Tasks() {
           onOpenTask={setEditingTask}
           canDrag={canEdit}
           onDropTask={handleDropTask}
+        />
+      ) : view === 'table' ? (
+        <TasksTable
+          tasks={monthTasks}
+          directory={directory}
+          clientRows={clientRows}
+          clientNameFor={clientNameFor}
+          assigneeNamesFor={assigneeNamesFor}
+          onOpenTask={setEditingTask}
         />
       ) : view === 'team' ? (
         <TeamView
