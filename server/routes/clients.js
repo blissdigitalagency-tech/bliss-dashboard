@@ -5,8 +5,9 @@ import {
   CLIENT_ID_COLUMN,
 } from '../utils/xlsx.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
+import { dataPath } from '../utils/dataDir.js'
 
-const CLIENTS_PATH = new URL('../data/clients.xlsx', import.meta.url)
+const CLIENTS_PATH = dataPath('clients.xlsx')
 
 const router = Router()
 

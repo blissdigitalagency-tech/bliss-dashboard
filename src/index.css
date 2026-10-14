@@ -200,3 +200,20 @@ body {
   color: var(--color-text-muted);
   background: var(--color-surface);
 }
+
+.backup-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.backup-row .btn-plain {
+  text-decoration: none;
+}
+
+.backup-hint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}

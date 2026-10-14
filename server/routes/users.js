@@ -2,8 +2,9 @@ import { Router } from 'express'
 import bcrypt from 'bcryptjs'
 import { readUsers, writeUsers } from '../utils/users.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
+import { dataPath } from '../utils/dataDir.js'
 
-const USERS_PATH = new URL('../data/users.json', import.meta.url)
+const USERS_PATH = dataPath('users.json')
 const VALID_ROLES = ['Superadmin', 'Editor', 'User']
 
 const router = Router()

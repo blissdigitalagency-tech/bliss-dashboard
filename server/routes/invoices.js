@@ -1,9 +1,10 @@
 import { Router } from 'express'
 import { readJson, writeJson } from '../utils/jsonStore.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
+import { dataPath } from '../utils/dataDir.js'
 
-const TEMPLATES_PATH = new URL('../data/invoice-templates.json', import.meta.url)
-const LOG_PATH = new URL('../data/invoice-log.json', import.meta.url)
+const TEMPLATES_PATH = dataPath('invoice-templates.json')
+const LOG_PATH = dataPath('invoice-log.json')
 
 const router = Router()
 
