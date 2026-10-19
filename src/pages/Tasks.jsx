@@ -185,7 +185,7 @@ function Kanban({
   const [dragOverStage, setDragOverStage] = useState(null)
 
   return (
-    <div className="task-kanban">
+    <div className="task-kanban" style={{ '--kanban-cols': STAGES.length }}>
       {STAGES.map((stage) => {
         const columnTasks = tasks.filter((t) => t.stage === stage.key)
         return (
